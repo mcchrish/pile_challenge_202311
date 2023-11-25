@@ -28,8 +28,13 @@ server.route({
                 balances: {
                   type: "object",
                   properties: {
-                    value: { type: "number" },
-                    currency: { type: "string", enum: ["EUR"] },
+                    available: {
+                      type: "object",
+                      properties: {
+                        value: { type: "number" },
+                        currency: { type: "string", enum: ["EUR"] },
+                      },
+                    },
                   },
                 },
                 country: { type: "string", enum: ["DEU"] },
@@ -49,7 +54,7 @@ server.route({
   method: "POST",
   url: "/sepa-bank-transfer",
   async handler(request) {
-    console.log('Transfer request:', request.body);
+    console.log("Transfer request:", request.body);
     return request.body;
   },
   schema: {
