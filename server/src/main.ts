@@ -1,7 +1,8 @@
+import { JsonSchemaToTsProvider } from "@fastify/type-provider-json-schema-to-ts";
 import fastify from "fastify";
 import fs from "node:fs/promises";
 
-const server = fastify();
+const server = fastify().withTypeProvider<JsonSchemaToTsProvider>();
 
 server.route({
   method: "GET",
@@ -48,17 +49,37 @@ server.route({
   method: "POST",
   url: "/sepa-bank-transfer",
   async handler(request) {
-    const file = await fs.readFile("data/accounts.json");
-    const data = JSON.parse(file.toString());
-    return {
-      ...data,
-    };
+    console.log('Transfer request:', request.body);
+    return request.body;
   },
   schema: {
+    querystring: {
+      type: "object",
+      properties: {
+        maxBalance: { type: "number", multipleOf: 0.01 },
+        minBalance: { type: "number", multipleOf: 0.01 },
+        name: { type: "string" },
+      },
+    },
     body: {
-      type: 'object',
-    }
-  }
+      type: "object",
+      properties: {
+        sourceId: { type: "string" },
+        amount: { type: "number", multipleOf: 0.01 },
+        recipientName: { type: "string" },
+        targetIban: { type: "string" },
+        targetBic: { type: "string" },
+        reference: { type: "string" },
+      },
+      required: [
+        "sourceId",
+        "amount",
+        "recipientName",
+        "targetIban",
+        "targetBic",
+      ],
+    },
+  },
 });
 
 server.listen({ port: 8080 }, (err, address) => {
