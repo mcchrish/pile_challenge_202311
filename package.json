@@ -1,0 +1,34 @@
+{
+  "name": "pile_challenge_202311",
+  "version": "0.0.0",
+  "description": "Coding Challenge",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "format": "prettier . --write"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mcchrish/pile_challenge_202311.git"
+  },
+  "author": "Michael Chris Lopez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mcchrish/pile_challenge_202311/issues"
+  },
+  "homepage": "https://github.com/mcchrish/pile_challenge_202311#readme",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
+    "@typescript-eslint/parser": "^6.10.0",
+    "eslint": "^8.53.0",
+    "eslint-config-prettier": "^9.0.0",
+    "prettier": "^3.1.0",
+    "typescript": "^5.3.2"
+  }
+}
