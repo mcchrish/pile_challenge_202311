@@ -36,15 +36,13 @@ server.route({
 
       return true;
     });
-    const totalBalances = filtersAccounts.reduce(
+    const totalBalances = data.data.reduce(
       (total, account) => total + account.balances.available.value,
       0,
     );
     return {
-      data: {
-        accounts: filtersAccounts,
-        totalBalances,
-      },
+      accounts: filtersAccounts,
+      totalBalances,
     };
   },
   schema: {
@@ -60,34 +58,29 @@ server.route({
       200: {
         type: "object",
         properties: {
-          data: {
-            type: "object",
-            properties: {
-              totalBalances: { type: "number" },
-              accounts: {
-                type: "array",
-                items: {
+          totalBalances: { type: "number" },
+          accounts: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                IBAN: { type: "string" },
+                balances: {
                   type: "object",
                   properties: {
-                    IBAN: { type: "string" },
-                    balances: {
+                    available: {
                       type: "object",
                       properties: {
-                        available: {
-                          type: "object",
-                          properties: {
-                            value: { type: "number" },
-                            currency: { type: "string", enum: ["EUR"] },
-                          },
-                        },
+                        value: { type: "number" },
+                        currency: { type: "string", enum: ["EUR"] },
                       },
                     },
-                    country: { type: "string", enum: ["DEU"] },
-                    createdAt: { type: "string" },
-                    id: { type: "string" },
-                    name: { type: "string" },
                   },
                 },
+                country: { type: "string", enum: ["DEU"] },
+                createdAt: { type: "string" },
+                id: { type: "string" },
+                name: { type: "string" },
               },
             },
           },

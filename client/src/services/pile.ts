@@ -1,39 +1,34 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import {
-  BankAccount,
-  GetBankAccountsQueryParams,
-  FormValues,
-} from "../types";
+import { BankAccount, GetBankAccountsQueryParams, FormValues } from "../types";
 
 interface GetBankAccountsResponse {
-  data: {
-    accounts: BankAccount[];
-    totalBalance: number;
-  };
+  accounts: BankAccount[];
+  totalBalances: number;
 }
 
-type SepaTransferInput = Omit<FormValues, 'sourceAccount'> & {sourceId: string}
+type SepaTransferInput = Omit<FormValues, "sourceAccount"> & {
+  sourceId: string;
+};
 
 // Define a service using a base URL and expected endpoints
 export const pileApi = createApi({
   reducerPath: "pileApi",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8080/" }),
-  endpoints: (builder) => ({
-    getBankAccounts: builder.query<
+  endpoints: (build) => ({
+    getBankAccounts: build.query<
       GetBankAccountsResponse,
       GetBankAccountsQueryParams
     >({
       query: (params) => {
         const searchParams = new URLSearchParams();
         for (const [key, value] of Object.entries(params)) {
-          searchParams.set(key, value);
+          if (value) searchParams.set(key, value);
         }
         return `bank-accounts?${searchParams.toString()}`;
       },
     }),
-    sepaBankTransfer: builder.mutation<SepaTransferInput, SepaTransferInput>({
-      // note: an optional `queryFn` may be used in place of `query`
+    sepaBankTransfer: build.mutation<SepaTransferInput, SepaTransferInput>({
       query: (input) => ({
         url: `sepa-bank-transfer`,
         method: "POST",

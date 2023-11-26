@@ -1,12 +1,12 @@
 import { Dialog, Listbox } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { useCallback, useState } from "react";
+import { AccountItem, AccountNotSelected } from "./components/account-item";
 import {
   useGetBankAccountsQuery,
   useSepaBankTransferMutation,
 } from "./services/pile";
-import { GetBankAccountsQueryParams, FormValues } from "./types";
-import { AccountItem, AccountNotSelected } from "./components/account-item";
+import { FormValues, GetBankAccountsQueryParams } from "./types";
 
 function App() {
   const [filters, setFilters] = useState<GetBankAccountsQueryParams>({
@@ -23,12 +23,13 @@ function App() {
     targetBic: "",
     reference: "",
   });
+  const [errorMsg, setErrorMsg] = useState("test");
 
   const onSubmit = useCallback(
     async (event: React.SyntheticEvent) => {
       event.preventDefault();
       if (!values.sourceAccount) {
-        // TODO validated
+        setErrorMsg("Source account required");
         return;
       }
       await sepaBankTransfer({
@@ -39,7 +40,7 @@ function App() {
     [sepaBankTransfer, values],
   );
 
-  return !data?.data ? (
+  return !data ? (
     <div className="animate-pulse flex flex-col gap-2">
       <div className="rounded bg-slate-100 h-20 w-full"></div>
       <div className="rounded bg-slate-100 h-40 w-full"></div>
@@ -48,7 +49,16 @@ function App() {
   ) : (
     <>
       <form className="flex flex-col gap-2" onSubmit={onSubmit}>
-        <h2 className="font-semibold text-xl mt-2">Source</h2>
+        <div className="flex justify-between items-center">
+          <h2 className="font-semibold text-xl mt-2">Source</h2>
+          <span>
+            Total Balances:{" "}
+            {data.totalBalances.toLocaleString(undefined, {
+              style: "currency",
+              currency: "EUR",
+            })}
+          </span>
+        </div>
         <div className="flex flex-col gap-2 border rounded-lg p-4">
           <div className="flex flex-col gap-1 border rounded-lg p-2 bg-gray-50">
             <p className="font-medium text-sm">
@@ -63,9 +73,10 @@ function App() {
               <label className="flex flex-col gap-1">
                 <span className="font-medium text-xs">Search</span>
                 <input
+                  name="search"
                   className="border border-gray-400 rounded px-2 py-1 w-full"
                   value={filters.search}
-                  placeholder="Deutsche Bank"
+                  placeholder="Deutsche Bank / IBAN"
                   onChange={(event) => {
                     setFilters((values) => ({
                       ...values,
@@ -77,6 +88,7 @@ function App() {
               <label className="flex flex-col gap-1">
                 <span className="font-medium text-xs">Min Balance</span>
                 <input
+                  name="min_balance"
                   className="border border-gray-400 rounded px-2 py-1 w-full"
                   value={filters.min_balance}
                   type="number"
@@ -93,6 +105,7 @@ function App() {
               <label className="flex flex-col gap-1">
                 <span className="font-medium text-xs">Max Balance</span>
                 <input
+                  name="max_balance"
                   className="border border-gray-400 rounded px-2 py-1 w-full"
                   value={filters.max_balance}
                   type="number"
@@ -110,6 +123,8 @@ function App() {
           </div>
           <Listbox
             as="div"
+            name="sourceAccount"
+            aria-required
             className="relative"
             value={values.sourceAccount}
             onChange={(sourceAccount) => {
@@ -130,7 +145,7 @@ function App() {
               </span>
             </Listbox.Button>
             <Listbox.Options className="absolute max-h-60 w-full overflow-auto rounded-md py-1 shadow-lg bg-white">
-              {data.data.accounts.map((account) => (
+              {data.accounts.map((account) => (
                 <Listbox.Option
                   key={account.id}
                   value={account}
@@ -160,6 +175,7 @@ function App() {
           <label className="flex flex-col gap-1">
             <span className="font-medium">Amount (EUR)</span>
             <input
+              name="amount"
               className="border border-gray-400 rounded px-2 py-1 w-full"
               value={values.amount}
               type="number"
@@ -181,6 +197,7 @@ function App() {
           <label className="flex flex-col gap-1">
             <span className="font-medium">IBAN</span>
             <input
+              name="targetIban"
               className="border border-gray-400 rounded px-2 py-1 w-full"
               value={values.targetIban}
               type="text"
@@ -197,6 +214,7 @@ function App() {
           <label className="flex flex-col gap-1">
             <span className="font-medium">BIC</span>
             <input
+              name="targetIban"
               className="border border-gray-400 rounded px-2 py-1 w-full"
               value={values.targetBic}
               type="text"
@@ -213,6 +231,7 @@ function App() {
           <label className="flex flex-col gap-1">
             <span className="font-medium">Recipient's Name</span>
             <input
+              name="recipientName"
               className="border border-gray-400 rounded px-2 py-1 w-full"
               value={values.recipientName}
               type="text"
@@ -229,6 +248,7 @@ function App() {
           <label className="flex flex-col gap-1">
             <span className="font-medium">Reference</span>
             <input
+              name="reference"
               className="border border-gray-400 rounded px-2 py-1 w-full"
               value={values.reference}
               type="text"
@@ -249,6 +269,14 @@ function App() {
         >
           Transfer
         </button>
+        {!!errorMsg && (
+          <p
+            role="alert"
+            className="bg-red-50 rounded-lg text-red-900 px-4 py-2"
+          >
+            {errorMsg}
+          </p>
+        )}
       </form>
       <Dialog
         as="div"
