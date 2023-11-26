@@ -8,6 +8,14 @@ import {
 } from "./services/pile";
 import { FormValues, GetBankAccountsQueryParams } from "./types";
 
+const defaultValues = {
+  amount: 0,
+  recipientName: "",
+  targetIban: "",
+  targetBic: "",
+  reference: "",
+};
+
 function App() {
   const [filters, setFilters] = useState<GetBankAccountsQueryParams>({
     min_balance: 0,
@@ -16,14 +24,8 @@ function App() {
   });
   const { data, isFetching } = useGetBankAccountsQuery(filters);
   const [sepaBankTransfer, results] = useSepaBankTransferMutation();
-  const [values, setValues] = useState<FormValues>({
-    amount: 0,
-    recipientName: "",
-    targetIban: "",
-    targetBic: "",
-    reference: "",
-  });
-  const [errorMsg, setErrorMsg] = useState("test");
+  const [values, setValues] = useState<FormValues>(defaultValues);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const onSubmit = useCallback(
     async (event: React.SyntheticEvent) => {
@@ -39,6 +41,12 @@ function App() {
     },
     [sepaBankTransfer, values],
   );
+
+  const reset = useCallback(() => {
+    setValues(defaultValues);
+    setErrorMsg("");
+    results.reset();
+  }, [results]);
 
   return !data ? (
     <div className="animate-pulse flex flex-col gap-2">
@@ -238,7 +246,7 @@ function App() {
               onChange={(event) => {
                 setValues((values) => ({
                   ...values,
-                  recipientName: event.target.value.trim(),
+                  recipientName: event.target.value,
                 }));
               }}
               required
@@ -255,7 +263,7 @@ function App() {
               onChange={(event) => {
                 setValues((values) => ({
                   ...values,
-                  reference: event.target.value.trim(),
+                  reference: event.target.value,
                 }));
               }}
               required
@@ -282,7 +290,7 @@ function App() {
         as="div"
         open={!!results.fulfilledTimeStamp}
         className="relative z-10"
-        onClose={results.reset}
+        onClose={reset}
       >
         <div className="fixed inset-0 bg-black/25" />
         <div className="fixed inset-0 overflow-y-auto">
@@ -304,9 +312,9 @@ function App() {
                 <button
                   type="button"
                   className="inline-flex justify-center rounded border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900"
-                  onClick={results.reset}
+                  onClick={reset}
                 >
-                  Got it, thanks!
+                  Done
                 </button>
               </div>
             </Dialog.Panel>

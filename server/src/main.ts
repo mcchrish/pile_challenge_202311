@@ -2,8 +2,10 @@ import { JsonSchemaToTsProvider } from "@fastify/type-provider-json-schema-to-ts
 import fastify from "fastify";
 import fs from "node:fs/promises";
 import { isAccountsData } from "./is-accounts-data.js";
+import cors from "@fastify/cors";
 
 const server = fastify().withTypeProvider<JsonSchemaToTsProvider>();
+await server.register(cors, {});
 
 server.route({
   method: "GET",
