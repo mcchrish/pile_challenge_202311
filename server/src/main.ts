@@ -1,8 +1,8 @@
+import cors from "@fastify/cors";
 import { JsonSchemaToTsProvider } from "@fastify/type-provider-json-schema-to-ts";
 import fastify from "fastify";
 import fs from "node:fs/promises";
 import { isAccountsData } from "./is-accounts-data.js";
-import cors from "@fastify/cors";
 
 const server = fastify().withTypeProvider<JsonSchemaToTsProvider>();
 await server.register(cors, {});
@@ -28,9 +28,9 @@ server.route({
       } else if (
         search &&
         !(
-          account.IBAN.toLowerCase().includes(search) ||
-          account.name.toLowerCase().includes(search) ||
-          account.country.toLowerCase().includes(search)
+          account.IBAN.toLowerCase().includes(search.toLowerCase()) ||
+          account.name.toLowerCase().includes(search.toLowerCase()) ||
+          account.country.toLowerCase().includes(search.toLowerCase())
         )
       ) {
         return false;

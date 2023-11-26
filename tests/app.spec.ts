@@ -14,7 +14,7 @@ test("Successful transfer", async ({ page }) => {
     .getByRole("option", { name: "DE56530041836982318248 (auu9v) €" })
     .click();
   await page.getByLabel("Amount (EUR)").fill("2000");
-  await page.getByLabel("IBAN").fill("DE123123123");
+  await page.getByLabel("IBAN").fill("DE20214577582752901028");
   await page.getByLabel("BIC").fill("DEUBNK123");
   await page.getByLabel("Recipient's Name").fill("John Smith");
   await page.getByLabel("Reference").fill("Ref. 123");
@@ -29,7 +29,7 @@ test("Successful transfer", async ({ page }) => {
 
 test("Require source account", async ({ page }) => {
   await page.getByLabel("Amount (EUR)").fill("2000");
-  await page.getByLabel("IBAN").fill("DE123123123");
+  await page.getByLabel("IBAN").fill("DE20214577582752901028");
   await page.getByLabel("BIC").fill("DEUBNK123");
   await page.getByLabel("Recipient's Name").fill("John Smith");
   await page.getByLabel("Reference").fill("Ref. 123");
